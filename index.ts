@@ -1,38 +1,49 @@
-// import {commandLineArgs} from 'command-line-args'
+import * as fs from 'fs';
+import * as path from 'path';
+import * as commandLineArgs from 'command-line-args';
 
-// const definition = [
-//     { name: 'path', alias: 'p', type: String, defaultValue: "/node_modules" },
-// ]
+const definition = [
+    { name: 'path', alias: 'p', type: String, defaultValue: process.cwd() },
+];
 
-// const option = commandLineArgs(definition);
+const options = commandLineArgs(definition);
 
-// const path:string = option.path;
+let directoryPath: string = options.path == process.cwd() ? options.path : process.cwd() + options.path;
 
-// console.log(path);
+console.log(`Directory path: ${directoryPath}`);
 
-import * as fs from 'node:fs';
-const appPath = process.cwd();
-// const fs1 = fs.readFile(appPath+'/node_modules/.bin/mime',"utf-8",(err, data)=>{
-
-
-// const fs1 = fs.readdir(appPath, function (err, files) {
-//     if (err) {
-//         console.log(err)
-//     } else {
-//         if (!files.length) {
-//             console.log(files.length)
-//         }
-//     }
-// });
-
-
-function isEmpty(path) {
-    return fs.readdirSync(path).length === 0;
+function isEmpty(directory: string): boolean {
+    return fs.readdirSync(directory).length === 0;
 }
-    console.log(isEmpty(appPath+"/test"))
 
-    
-// const fs2 = fs.readFile(appPath + '/index.ts', "utf-8", (err, data) => {
+function spaceCount(space: number): string {
+    let start = '';
+    for (let i = 0; i < space; i++) {
+        start += '  ';
+    }
+    return start;
+}
 
-//     console.log(data)
-// });
+function nestedFilesNames(directory: string, space: number = 0): void {
+    const files = fs.readdirSync(directory);
+
+    for (const file of files) {
+        const filePath = path.join(directory, file);
+        const spaces = spaceCount(space);
+
+        if (fs.statSync(filePath).isDirectory()) {
+            console.log(`${spaces}${file}`);
+            if (!isEmpty(filePath)) {
+                nestedFilesNames(filePath, space + 1);
+            } else {
+                console.log(`------------------`);
+            }
+        } else {
+            console.log(`${spaces}${file}`);
+        }
+    }
+}
+
+
+nestedFilesNames(directoryPath);
+
