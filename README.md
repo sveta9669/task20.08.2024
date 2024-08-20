@@ -5,9 +5,10 @@ Open terminal and do these steps
         `mkdir task`
         `cd task`
         `git clone https://github.com/sveta9669/task20.08.2024.git`
+        `cd task20.08.2024`
         `npm i`
-        `ts-node index.ts -p 'node_modules\.bin'`
+        `ts-node index.ts -p node_modules\.bin`
         or
-        `ts-node index.ts -p 'node_modules'`
+        `ts-node index.ts -p node_modules`
         or
         `ts-node index.ts`
