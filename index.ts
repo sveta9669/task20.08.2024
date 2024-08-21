@@ -7,8 +7,7 @@ const definition = [
 ];
 
 const options = commandLineArgs(definition);
-
-let directoryPath: string = options.path == process.cwd() ? options.path : process.cwd() + options.path;
+let directoryPath: string = options.path === process.cwd() ? options.path : path.resolve(process.cwd(), options.path);
 
 console.log(`Directory path: ${directoryPath}`);
 
@@ -24,26 +23,31 @@ function spaceCount(space: number): string {
     return start;
 }
 
-function nestedFilesNames(directory: string, space: number = 0): void {
-    const files = fs.readdirSync(directory);
+function printDirectory(directory: string): void {
+    function recursiveFunc(directory: string, space: number = 0): void {
+        
+        const files = fs.readdirSync(directory);
 
-    for (const file of files) {
-        const filePath = path.join(directory, file);
-        const spaces = spaceCount(space);
+        files.forEach((file) => {
+            const filePath = path.join(directory, file);
+            const spaces = spaceCount(space);
 
-        if (fs.statSync(filePath).isDirectory()) {
-            console.log(`${spaces}${file}`);
-            if (!isEmpty(filePath)) {
-                nestedFilesNames(filePath, space + 1);
+            if (fs.statSync(filePath).isDirectory()) {
+                console.log(`${spaces}${file}`);
+                if (!isEmpty(filePath)) {
+                    recursiveFunc(filePath, space + 1);
+                } else {
+                    console.log(`${spaces}------------------`);
+                }
             } else {
-                console.log(`------------------`);
+                console.log(`${spaces}${file}`);
             }
-        } else {
-            console.log(`${spaces}${file}`);
-        }
+        });
     }
+
+    recursiveFunc(directory);
 }
 
 
-nestedFilesNames(directoryPath);
+printDirectory(directoryPath);
 
